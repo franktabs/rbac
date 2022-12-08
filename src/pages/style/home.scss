@@ -1,0 +1,41 @@
+.bg_body {
+    background-color: #0000002d;
+}
+
+.my_modal {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: #0000007c;
+    height: 100vh;
+
+    .my_modal_div {
+        background-color: white;
+        padding: 1em 1em;
+        max-width: 90%;
+        box-shadow: #00000044 3px 3px 20px;
+
+        button {
+            box-shadow: #0000008c 5px 5px 10px;
+            cursor: pointer;
+            text-transform: capitalize;
+
+            &:active {
+                box-shadow: #0000008c 1px 1px 5px inset;
+            }
+        }
+    }
+}
+
+.my_alert {
+    position: fixed;
+    top: 15px;
+    z-index: 99;
+    width: 40%;
+    left: 50%;
+    transform: translateX(-50%);
+}
