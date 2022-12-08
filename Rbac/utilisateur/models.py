@@ -4,12 +4,17 @@ from rest_framework import serializers
 
 
 class Utilisateur(models.Model):
-    statut = models.CharField(null=False, max_length=45, default="client")
+    blocage = [('OUI', "OUI"), ("NON", "NON")]
+    statuts = [("client", "CLIENT"), ("employe", "EMPLOYE")]
+    statut = models.CharField(
+        null=False, max_length=45, default="client", choices=statuts)
     nom = models.CharField(max_length=255, null=False)
     email = models.EmailField(null=False, max_length=255, unique=True)
     password = models.CharField(null=False, max_length=255, blank=False)
     role = models.ManyToManyField(
         "Role", through="utilisateur_role", related_name="utilisateur")
+    bloque = models.CharField(
+        max_length=10, choices=blocage, null=False, blank=False, default="NON")
 
     class Meta:
         db_table = "utilisateur"
@@ -30,14 +35,14 @@ class Role(models.Model):
         db_table = "role"
 
 
-class RoleSerializer(serializers.ModelSerializer):
+class RoleWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Role
         fields = "__all__"
 
 
-class UtilisateurSerializer(serializers.ModelSerializer):
+class UtilisateurWriteSerializer(serializers.ModelSerializer):
     # role = RoleSerializer()
 
     class Meta:
@@ -62,11 +67,28 @@ class PermissionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class RoleSerializer(serializers.ModelSerializer):
+    permission = PermissionSerializer(many=True)
+
+    class Meta:
+        model = Role
+        fields = "__all__"
+
+
+class UtilisateurSerializer(serializers.ModelSerializer):
+    role = RoleSerializer(many=True)
+
+    class Meta:
+        model = Utilisateur
+        fields = "__all__"
+
+
 class Utilisateur_role(models.Model):
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
     class Meta:
+        verbose_name = "Utilisateur et Role"
         db_table = "utilisateur_role"
         unique_together = ('role_id', "utilisateur_id")
         constraints = [models.UniqueConstraint(
@@ -90,6 +112,7 @@ class Role_permission(models.Model):
     permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
 
     class Meta:
+        verbose_name = "Role et permission"
         db_table = "role_permission"
         unique_together = ('role_id', "permission_id")
         constraints = [models.UniqueConstraint(

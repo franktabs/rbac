@@ -13,5 +13,9 @@ router.register('role_permission/?', Role_permissionViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('login', connection),
+    path('login', connectionView),
+    path("clients", clientView),
+    path("employe", employeView),
+    path("newPassword/<int:id>", newPasswordView),
+    path("blocage/<int:id>", blocageView),
 ]
